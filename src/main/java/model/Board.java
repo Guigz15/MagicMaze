@@ -66,6 +66,31 @@ public class Board {
         return neighbors;
     }
 
+    public void generateItems() {
+        boolean monsterPlaced = false;
+        boolean crevassePlaced = false;
+        boolean portalPlaced = false;
+        Random random = new Random();
+        while (!monsterPlaced || !crevassePlaced || !portalPlaced) {
+            int x = random.nextInt(width);
+            int y = random.nextInt(height);
+            Tile tile = getTile(x, y);
+            if (!tile.hasItem()) {
+                if (!monsterPlaced) {
+                    tile.setMonster(true);
+                    monsterPlaced = true;
+                } else if (!crevassePlaced) {
+                    tile.setCrevasse(true);
+                    crevassePlaced = true;
+                } else {
+                    tile.setPortal(true);
+                    portalPlaced = true;
+                }
+            }
+            tile.draw();
+        }
+    }
+
     public void nextLevel(GridPane gridPane) {
         gridPane.getChildren().clear();
         setHeight(getHeight() + 1);
@@ -97,5 +122,24 @@ public class Board {
 
         for (ColumnConstraints column : gridPane.getColumnConstraints())
             column.setPercentWidth(100.0 / getWidth());
+
+        generateItems();
+
+        Tile characterTile = getRandomEmptyTile();
+        characterTile.setCharacter(true);
+        characterTile.draw();
+    }
+
+    public Tile getRandomEmptyTile() {
+        Random random = new Random();
+        int x = random.nextInt(width);
+        int y = random.nextInt(height);
+        Tile tile = getTile(x, y);
+        while (tile.hasItem()) {
+            x = random.nextInt(width);
+            y = random.nextInt(height);
+            tile = getTile(x, y);
+        }
+        return tile;
     }
 }

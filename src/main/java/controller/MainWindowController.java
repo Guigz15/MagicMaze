@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import model.Board;
 import model.Tile;
-
 import java.util.ResourceBundle;
+import model.Character;
 
 public class MainWindowController implements Initializable {
 
@@ -19,6 +19,7 @@ public class MainWindowController implements Initializable {
     private Button moveButton;
     @Getter @Setter
     private Board board;
+    private Character character;
 
     @Override
     public void initialize(java.net.URL location, ResourceBundle resources) {
@@ -32,6 +33,10 @@ public class MainWindowController implements Initializable {
                 gridPane.add(board.getTile(i, j), i, j);
             }
         }
+
+        board.generateItems();
+
+        character = new Character(board);
 
         moveButton.setOnAction(event -> {
             board.nextLevel(gridPane);

@@ -90,4 +90,8 @@ public class Tile extends Rectangle {
             setFill(null);
         }
     }
+
+    public boolean hasItem() {
+        return isMonster() || isCrevasse() || isPortal();
+    }
 }
