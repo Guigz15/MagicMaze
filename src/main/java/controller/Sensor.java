@@ -5,6 +5,8 @@ import lombok.Setter;
 import model.Board;
 import model.Tile;
 
+import java.util.List;
+
 public class Sensor {
 
     @Getter @Setter

@@ -74,19 +74,70 @@ public class Tile extends Rectangle {
      * Draw objects in tile if an object is present
      */
     public void draw() {
-        if (isCharacter()) {
-            setFill(new ImagePattern(new Image("images/adventurer.png")));
-        } else if (isMonster()) {
+        //Cas avec les cases personnages
+        if (isCharacter())
+        {
+            if (isPortal())
+            {
+                setFill(new ImagePattern(new Image("images/adventurer_portal.png")));
+            }
+            else if (isMonster())
+            {
+                setFill(new ImagePattern(new Image("images/adventurer_monster.png")));
+            }
+            else if(isCrevasse())
+            {
+                setFill(new ImagePattern(new Image("images/adventurer_sink.png")));
+            }
+            else if(isBadSmelling())
+            {
+                if (isWindy())
+                {
+                    setFill(new ImagePattern(new Image("images/adventurer_bin_wind.png")));
+                }
+                else
+                {
+                    setFill(new ImagePattern(new Image("images/adventurer_bin.png")));
+                }
+            }
+            else if(isWindy())
+            {
+                setFill(new ImagePattern(new Image("images/adventurer_wind.png")));
+            }
+            else
+            {
+                setFill(new ImagePattern(new Image("images/adventurer.png")));
+            }
+        }
+        else if (isMonster())
+        {
             setFill(new ImagePattern(new Image("images/monster.png")));
-        } else if (isBadSmelling()) {
-            setFill(new ImagePattern(new Image("images/bin.png")));
-        } else if (isCrevasse()) {
+        }
+        else if (isCrevasse())
+        {
             setFill(new ImagePattern(new Image("images/sink.png")));
-        } else if (isWindy()) {
-            setFill(new ImagePattern(new Image("images/wind.png")));
-        } else if (isPortal()) {
+        }
+        else if (isPortal())
+        {
             setFill(new ImagePattern(new Image("images/portal.png")));
-        } else if (!isCharacter() && !isMonster() && !isBadSmelling() && !isCrevasse() && !isWindy() && !isPortal()) {
+        }
+        else if (isBadSmelling())
+        {
+            if (isWindy())
+            {
+                setFill(new ImagePattern(new Image("images/adventurer_bin_wind.png")));
+            }
+            else
+            {
+                setFill(new ImagePattern(new Image("images/bin.png")));
+            }
+        }
+        else if (isWindy())
+        {
+            setFill(new ImagePattern(new Image("images/wind.png")));
+        }
+        else
+        {
             setFill(null);
         }
     }

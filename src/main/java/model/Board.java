@@ -67,25 +67,38 @@ public class Board {
     }
 
     public void generateItems() {
-        boolean monsterPlaced = false;
-        boolean crevassePlaced = false;
+        int monsterPlaced = 0;
+        int crevassePlaced = 0;
         boolean portalPlaced = false;
-        Random random = new Random();
-        while (!monsterPlaced || !crevassePlaced || !portalPlaced) {
-            int x = random.nextInt(width);
-            int y = random.nextInt(height);
-            Tile tile = getTile(x, y);
+        while (monsterPlaced < height-2 || crevassePlaced < height-2 || !portalPlaced)
+        {
+            Tile tile = getRandomEmptyTile();
             if (!tile.hasItem()) {
-                if (!monsterPlaced) {
+                if (monsterPlaced < height - 2) {
                     tile.setMonster(true);
-                    monsterPlaced = true;
-                } else if (!crevassePlaced) {
+                    List<Tile> neighbors = getNeighbors(tile);
+                    neighbors.forEach(neighbor ->
+                    {
+                        neighbor.setBadSmelling(true);
+                        neighbor.draw();
+                    });
+                    monsterPlaced++;
+                } else if (crevassePlaced < height - 2) {
                     tile.setCrevasse(true);
-                    crevassePlaced = true;
+                    List<Tile> neighbors = getNeighbors(tile);
+                    neighbors.forEach(neighbor ->
+                    {
+                        neighbor.setWindy(true);
+                        neighbor.draw();
+                    });
+                    crevassePlaced++;
                 } else {
                     tile.setPortal(true);
                     portalPlaced = true;
                 }
+                System.out.println("nombre de monstre placé : " + monsterPlaced);
+                System.out.println("nombre de crevasse placé : " + crevassePlaced);
+                System.out.println("nombre de portail placé : " + portalPlaced);
             }
             tile.draw();
         }
