@@ -5,7 +5,6 @@ import controller.Sensor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Random;
 
 public class Character {
 
