@@ -93,7 +93,7 @@ public class Tile extends Rectangle {
             {
                 if (isWindy())
                 {
-                    setFill(new ImagePattern(new Image("images/adventurer_bin_wind.png")));
+                    setFill(new ImagePattern(new Image("images/adventurer_wind_bin.png")));
                 }
                 else
                 {
@@ -125,7 +125,7 @@ public class Tile extends Rectangle {
         {
             if (isWindy())
             {
-                setFill(new ImagePattern(new Image("images/adventurer_bin_wind.png")));
+                setFill(new ImagePattern(new Image("images/bin_wind.png")));
             }
             else
             {
