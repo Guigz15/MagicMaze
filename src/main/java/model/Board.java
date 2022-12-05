@@ -67,44 +67,32 @@ public class Board {
     }
 
     public void generateItems() {
-        int monsterPlaced = 0;
-        int crevassePlaced = 0;
-        boolean portalPlaced = false;
-        while (monsterPlaced < height-2 || crevassePlaced < height-2 || !portalPlaced)
-        {
-            Tile tile = getRandomEmptyTile();
-            if (!tile.hasItem()) {
-                if (monsterPlaced < height - 2) {
-                    tile.setMonster(true);
-                    List<Tile> neighbors = getNeighbors(tile);
-                    neighbors.forEach(neighbor ->
-                    {
-                        neighbor.setBadSmelling(true);
-                        neighbor.draw();
-                    });
-                    monsterPlaced++;
-                } else if (crevassePlaced < height - 2) {
-                    tile.setCrevasse(true);
-                    List<Tile> neighbors = getNeighbors(tile);
-                    neighbors.forEach(neighbor ->
-                    {
-                        neighbor.setWindy(true);
-                        neighbor.draw();
-                    });
-                    crevassePlaced++;
-                } else {
-                    tile.setPortal(true);
-                    portalPlaced = true;
-                }
-                /*
-                System.out.println("nombre de monstre placé : " + monsterPlaced);
-                System.out.println("nombre de crevasse placé : " + crevassePlaced);
-                System.out.println("nombre de portail placé : " + portalPlaced);
-
-                 */
+        tiles.forEach(row -> row.forEach(tile -> {
+            Random random = new Random();
+            if (random.nextInt(100) < 20) {
+                tile.setCrevasse(true);
+                List<Tile> neighbors = getNeighbors(tile);
+                neighbors.forEach(neighbor ->
+                {
+                    neighbor.setWindy(true);
+                    neighbor.draw();
+                });
+            }
+            if (random.nextInt(100) < 20 && !tile.hasItem()) {
+                tile.setMonster(true);
+                List<Tile> neighbors = getNeighbors(tile);
+                neighbors.forEach(neighbor ->
+                {
+                    neighbor.setBadSmelling(true);
+                    neighbor.draw();
+                });
             }
             tile.draw();
-        }
+        }));
+
+        Tile portalTile = getRandomEmptyTile();
+        portalTile.setPortal(true);
+        portalTile.draw();
     }
 
     public void nextLevel(GridPane gridPane, Character character) {

@@ -41,17 +41,13 @@ public class MainWindowController implements Initializable {
         board.generateItems();
 
         character = new Character(board);
-        moveButton.setOnAction(event ->
-        {
-            if (character.getSensor().getTile().isPortal())
-            {
+        moveButton.setOnAction(event -> {
+            if (character.getSensor().getTile().isPortal()) {
                 board.nextLevel(gridPane, character);
                 character.initializeLevel(board);
-            }
-            else
-            {
-                List<Action> actions = character.getDecision().makeRule();
-                character.getEffector().doAction(character, actions);
+            } else {
+                /*List<Action> actions = character.getDecision().makeRule();
+                character.getEffector().doAction(character, actions);*/
                 character.getSensor().update();
             }
         });

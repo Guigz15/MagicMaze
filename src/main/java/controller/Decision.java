@@ -16,17 +16,16 @@ public class Decision {
     @Getter @Setter
     private int evaluation;
 
-    public Decision(Sensor sensor)
-    {
+    public Decision(Sensor sensor) {
         this.sensor = sensor;
         evaluation = 0;
     }
 
-    public void updateEvaluation(int bonus)
-    {
+    public void updateEvaluation(int bonus) {
         evaluation += bonus;
     }
-    public List<Action> makeRule ()
+
+    /*public List<Action> makeRule ()
     {
         TreeMap<Integer,List<List<Action>>> ways = new TreeMap<>();
         System.out.println("unexplored tiles : "+ sensor.getUnexploredTiles());
@@ -49,8 +48,8 @@ public class Decision {
         System.out.println("chemin selectionne : " + ways.get(key).get(rand.nextInt(ways.get(key).size())));
         return ways.get(key).get(rand.nextInt(ways.get(key).size()));
 
-    }
-    public TreeMap<Integer,List<Action>> discoverTile(Tile goal)
+    }*/
+    /*public TreeMap<Integer,List<Action>> discoverTile(Tile goal)
     {
         int score = 0;
         List<Tile> neighborGoal = sensor.getBoard().getNeighbors(goal);
@@ -97,13 +96,14 @@ public class Decision {
         TreeMap<Integer, List<Action>> way= new TreeMap<>();
         way.put(score, actions);
         return way;
-    }
+    }*/
+
     /**
      * This method implements the bidirectional search algorithm
      * @param goal the goal tile
      * @return TreeMap with the evaluation and the list of actions
      */
-    public List<Action> bidirectionnalSearch(Tile goal) {
+    /*public List<Action> bidirectionnalSearch(Tile goal) {
         Tile communTile = null;
         LinkedHashSet<Tile> alreadySeenStart = new LinkedHashSet<>();
         LinkedHashSet<Tile> alreadySeenGoal = new LinkedHashSet<>();
@@ -141,20 +141,22 @@ public class Decision {
         secondPart.remove(0);
         firstPart.addAll(secondPart);
         return convertPathToActions(firstPart);
-    }
+    }*/
+
     /**
      * This method is used to propagate the search tree
      * @param tree the search tree
      * @param forbiddenTiles the forbidden tiles
      */
-    public void propagate(SearchTree tree, LinkedHashSet<Tile> forbiddenTiles) {
+    /*public void propagate(SearchTree tree, LinkedHashSet<Tile> forbiddenTiles) {
         List<SearchTree> leafs = tree.getLeaf();
         leafs.forEach(leaf -> {
             List<Tile> neighbours = sensor.getBoard().getNeighbors(leaf.getNode()).stream()
                     .filter((neighbour -> sensor.getDiscoveredTiles().contains(neighbour))).collect(Collectors.toList());
             leaf.addSons(neighbours);
         });
-    }
+    }*/
+
     /**
      * This method is used to convert a path to a list of actions
      * @param path list of tiles
@@ -174,5 +176,4 @@ public class Decision {
         }
         return actionsList;
     }
-
 }

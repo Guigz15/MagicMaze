@@ -24,10 +24,8 @@ public class Character {
         this.effector = new Effector(this.sensor);
         this.decision = new Decision(this.sensor);
     }
-    public void initializeLevel(Board board)
-    {
+    public void initializeLevel(Board board) {
         sensor.clear();
         sensor.getDiscoveredTiles().add(sensor.getTile());
-        sensor.getUnexploredTiles().addAll((board.getNeighbors(sensor.getTile())));
     }
 }
