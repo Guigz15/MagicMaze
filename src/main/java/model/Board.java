@@ -96,15 +96,18 @@ public class Board {
                     tile.setPortal(true);
                     portalPlaced = true;
                 }
+                /*
                 System.out.println("nombre de monstre placé : " + monsterPlaced);
                 System.out.println("nombre de crevasse placé : " + crevassePlaced);
                 System.out.println("nombre de portail placé : " + portalPlaced);
+
+                 */
             }
             tile.draw();
         }
     }
 
-    public void nextLevel(GridPane gridPane) {
+    public void nextLevel(GridPane gridPane, Character character) {
         gridPane.getChildren().clear();
         setHeight(getHeight() + 1);
         setWidth(getWidth() + 1);
@@ -140,6 +143,7 @@ public class Board {
 
         Tile characterTile = getRandomEmptyTile();
         characterTile.setCharacter(true);
+        character.getSensor().setTile(characterTile);
         characterTile.draw();
     }
 

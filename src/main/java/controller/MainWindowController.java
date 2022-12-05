@@ -6,8 +6,12 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import lombok.Getter;
 import lombok.Setter;
+import model.Action;
 import model.Board;
 import model.Tile;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import model.Character;
 
@@ -37,9 +41,19 @@ public class MainWindowController implements Initializable {
         board.generateItems();
 
         character = new Character(board);
-
-        moveButton.setOnAction(event -> {
-            board.nextLevel(gridPane);
+        moveButton.setOnAction(event ->
+        {
+            if (character.getSensor().getTile().isPortal())
+            {
+                board.nextLevel(gridPane, character);
+                character.initializeLevel(board);
+            }
+            else
+            {
+                List<Action> actions = character.getDecision().makeRule();
+                character.getEffector().doAction(character, actions);
+                character.getSensor().update();
+            }
         });
     }
 }
