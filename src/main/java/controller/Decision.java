@@ -162,7 +162,7 @@ public class Decision {
      * @param path list of tiles
      * @return TreeMap with the evaluation and the list of actions
      */
-    public List<Action> convertPathToActions(List<Tile> path) {
+    /*public List<Action> convertPathToActions(List<Tile> path) {
         List<Action> actionsList = new ArrayList<>();
         for (int i = 0; i < path.size() - 1; i++) {
             if (path.get(i).getX() < path.get(i + 1).getX())
@@ -175,5 +175,41 @@ public class Decision {
                 actionsList.add(Action.MOVE_UP);
         }
         return actionsList;
+    }*/
+
+    public Action makeRule() {
+        HashMap<Tile, Double> boundaryTiles = sensor.getBoundaryTiles();
+        Action action = getAction(sensor.getTile(), boundaryTiles.entrySet().iterator().next().getKey());
+        return action;
+    }
+
+    /**
+     * Get the action to go from currentTile to destinationTile
+     * @param currentTile
+     * @param destinationTile
+     * @return action to go from currentTile to destinationTile
+     */
+    private Action getAction(Tile currentTile, Tile destinationTile) {
+        if (currentTile.getX() < destinationTile.getX()) {
+            return Action.MOVE_RIGHT;
+        } else if (currentTile.getX() > destinationTile.getX()) {
+            return Action.MOVE_LEFT;
+        } else if (currentTile.getY() < destinationTile.getY()) {
+            return Action.MOVE_DOWN;
+        } else if (currentTile.getY() > destinationTile.getY()) {
+            return Action.MOVE_UP;
+        }
+        return null;
+    }
+
+    private Tile getDiscoveredNeighbours(Tile currentTile) {
+        Random random = new Random();
+        List<Tile> neighbours = sensor.getBoard().getNeighbours(currentTile);
+        neighbours.retainAll(sensor.getDiscoveredTiles());
+        return neighbours.get(random.nextInt(neighbours.size()));
+    }
+
+    public void nextLevel() {
+        updateEvaluation(10*sensor.getBoard().getHeight()*sensor.getBoard().getWidth());
     }
 }

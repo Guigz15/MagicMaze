@@ -1,10 +1,8 @@
 package model;
 
-import javafx.scene.image.Image;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.paint.ImagePattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,11 +45,11 @@ public class Board {
     }
 
     /**
-     * Get all neighbors of a tile
-     * @param tile to get neighbors
-     * @return list of neighbors of the tile
+     * Get all neighbours of a tile
+     * @param tile to get neighbours
+     * @return list of neighbours of the tile
      */
-    public List<Tile> getNeighbors(Tile tile) {
+    public List<Tile> getNeighbours(Tile tile) {
         int x = (int) tile.getX();
         int y = (int) tile.getY();
         List<Tile> neighbors = new ArrayList<>();
@@ -70,22 +68,23 @@ public class Board {
         tiles.forEach(row -> row.forEach(tile -> {
             Random random = new Random();
             if (random.nextInt(100) < 20) {
-                tile.setCrevasse(true);
-                List<Tile> neighbors = getNeighbors(tile);
-                neighbors.forEach(neighbor ->
-                {
-                    neighbor.setWindy(true);
-                    neighbor.draw();
-                });
-            }
-            if (random.nextInt(100) < 20 && !tile.hasItem()) {
-                tile.setMonster(true);
-                List<Tile> neighbors = getNeighbors(tile);
-                neighbors.forEach(neighbor ->
-                {
-                    neighbor.setBadSmelling(true);
-                    neighbor.draw();
-                });
+                if (random.nextInt(100) < 50) {
+                    tile.setCrevasse(true);
+                    List<Tile> neighbors = getNeighbours(tile);
+                    neighbors.forEach(neighbor ->
+                    {
+                        neighbor.setWindy(true);
+                        neighbor.draw();
+                    });
+                } else {
+                    tile.setMonster(true);
+                    List<Tile> neighbors = getNeighbours(tile);
+                    neighbors.forEach(neighbor ->
+                    {
+                        neighbor.setBadSmelling(true);
+                        neighbor.draw();
+                    });
+                }
             }
             tile.draw();
         }));
@@ -95,15 +94,15 @@ public class Board {
         portalTile.draw();
     }
 
-    public void nextLevel(GridPane gridPane, Character character) {
+    public void updateBoardSize(GridPane gridPane, Character character, int height, int width) {
         gridPane.getChildren().clear();
-        setHeight(getHeight() + 1);
-        setWidth(getWidth() + 1);
+        setHeight(height);
+        setWidth(width);
 
         tiles = new ArrayList<>();
-        for (int i = 0; i < height; i++) {
+        for (int i = 0; i < getHeight(); i++) {
             List<Tile> row = new ArrayList<>();
-            for (int j = 0; j < width; j++) {
+            for (int j = 0; j < getWidth(); j++) {
                 Tile tile = new Tile();
                 tile.setX(i);
                 tile.setY(j);

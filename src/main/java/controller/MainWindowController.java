@@ -2,7 +2,9 @@ package controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.GridPane;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +12,6 @@ import model.Action;
 import model.Board;
 import model.Tile;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import model.Character;
 
@@ -43,12 +43,28 @@ public class MainWindowController implements Initializable {
         character = new Character(board);
         moveButton.setOnAction(event -> {
             if (character.getSensor().getTile().isPortal()) {
-                board.nextLevel(gridPane, character);
-                character.initializeLevel(board);
+                board.updateBoardSize(gridPane, character, board.getHeight() + 1, board.getWidth() + 1);
+                character.nextLevel();
+            } else if (character.getSensor().getTile().isCrevasse() || character.getSensor().getTile().isMonster()) {
+                character.die();
+
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Voulez-vous rejouer ?", ButtonType.YES, ButtonType.NO);
+                alert.setTitle("Game Over");
+                alert.setHeaderText("Vous êtes mort !");
+                alert.showAndWait();
+                if (alert.getResult() == ButtonType.YES) {
+                    board.updateBoardSize(gridPane, character, 3, 3);
+                    character.getSensor().nextLevel();
+                } else {
+                    System.exit(0);
+                }
             } else {
-                /*List<Action> actions = character.getDecision().makeRule();
-                character.getEffector().doAction(character, actions);*/
+                Action action = character.getDecision().makeRule();
+                character.getEffector().doAction(character, action);
                 character.getSensor().update();
+                character.getSensor().getBoundaryTiles().forEach((tile, probability) -> {
+                    System.out.println("Probability: " + probability + " Tile: " + tile.getXPosition() + ", " + tile.getYPosition());
+                });
             }
         });
     }

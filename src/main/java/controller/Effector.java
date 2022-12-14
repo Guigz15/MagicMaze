@@ -97,8 +97,6 @@ public class Effector {
         Tile tile = sensor.getBoard().getTile(sensor.getXPosition(), sensor.getYPosition() - 1);
         if(tile.isMonster()) {
             tile.setMonster(false);
-        } else {
-
         }
     }
 
@@ -106,8 +104,6 @@ public class Effector {
         Tile tile = sensor.getBoard().getTile(sensor.getXPosition(), sensor.getYPosition() - 1);
         if(tile.isMonster()) {
             tile.setMonster(false);
-        } else {
-
         }
     }
 
@@ -115,8 +111,6 @@ public class Effector {
         Tile tile = sensor.getBoard().getTile(sensor.getXPosition(), sensor.getYPosition() - 1);
         if(tile.isMonster()) {
             tile.setMonster(false);
-        } else {
-
         }
     }
 
@@ -124,11 +118,8 @@ public class Effector {
         Tile tile = sensor.getBoard().getTile(sensor.getXPosition(), sensor.getYPosition() - 1);
         if(tile.isMonster()) {
             tile.setMonster(false);
-        } else {
-
         }
     }
-
 }
 
 
