@@ -15,7 +15,11 @@ public class Effector {
         this.sensor = sensor;
     }
 
-    public void doAction(Character character, Action action) {
+    public void doActions(Character character, List<Action> actions) {
+        actions.forEach(action -> doAction(character, action));
+    }
+
+    private void doAction(Character character, Action action) {
         Tile oldTile = character.getSensor().getTile();
         int oldX = oldTile.getXPosition();
         int oldY = oldTile.getYPosition();

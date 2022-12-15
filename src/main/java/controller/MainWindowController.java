@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -12,6 +13,7 @@ import model.Action;
 import model.Board;
 import model.Tile;
 
+import java.util.List;
 import java.util.ResourceBundle;
 import model.Character;
 
@@ -56,15 +58,22 @@ public class MainWindowController implements Initializable {
                     board.updateBoardSize(gridPane, character, 3, 3);
                     character.getSensor().nextLevel();
                 } else {
+                    // Kill GUI Thread
+                    Platform.exit();
+                    // Kill the JVM
                     System.exit(0);
                 }
             } else {
-                Action action = character.getDecision().makeRule();
-                character.getEffector().doAction(character, action);
-                character.getSensor().update();
-                character.getSensor().getBoundaryTiles().forEach((tile, probability) -> {
-                    System.out.println("Probability: " + probability + " Tile: " + tile.getXPosition() + ", " + tile.getYPosition());
+                System.out.println("------ New move ------");
+                character.getSensor().getBoundaryTiles().forEach((probability, tiles) -> {
+                    System.out.println("Probability: " + probability);
+                    tiles.forEach(tile -> {
+                        System.out.println("Tile: " + tile.getXPosition() + " " + tile.getYPosition());
+                    });
                 });
+                List<Action> actions = character.getDecision().makeRule();
+                character.getEffector().doActions(character, actions);
+                character.getSensor().update();
             }
         });
     }

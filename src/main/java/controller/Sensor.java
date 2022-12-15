@@ -1,11 +1,12 @@
 package controller;
 
+import javafx.scene.paint.Paint;
 import lombok.Getter;
 import lombok.Setter;
 import model.Board;
 import model.Tile;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+
+import java.util.*;
 
 public class Sensor {
 
@@ -16,22 +17,18 @@ public class Sensor {
     @Getter @Setter
     private LinkedHashSet<Tile> discoveredTiles;
     @Getter @Setter
-    private HashMap<Tile, Double> boundaryTiles;
+    private TreeMap<Double, List<Tile>> boundaryTiles;
 
 
     public Sensor(Board board, Tile tile) {
         this.board = board;
         this.tile = tile;
+        tile.setStroke(Paint.valueOf("green"));
+        tile.setStrokeWidth(2);
         discoveredTiles = new LinkedHashSet<>();
         discoveredTiles.add(tile);
-        boundaryTiles = new HashMap<>();
-        board.getNeighbours(tile).forEach(neighbour -> {
-            if (tile.isWindy() || tile.isBadSmelling())
-                boundaryTiles.put(neighbour, 0.2);
-            else
-                boundaryTiles.put(neighbour, 0.0);
-        });
-        entriesSortedByValues(boundaryTiles);
+        boundaryTiles = new TreeMap<>();
+        initBoundaryTiles();
     }
 
     /**
@@ -53,31 +50,43 @@ public class Sensor {
     public void nextLevel() {
         discoveredTiles.clear();
         discoveredTiles.add(tile);
+        tile.setStroke(Paint.valueOf("green"));
+        tile.setStrokeWidth(2);
         boundaryTiles.clear();
-        board.getNeighbours(tile).forEach(neighbour -> {
-            if (tile.isWindy() || tile.isBadSmelling())
-                boundaryTiles.put(neighbour, 0.2);
-            else
-                boundaryTiles.put(neighbour, 0.0);
-        });
-        entriesSortedByValues(boundaryTiles);
+        initBoundaryTiles();
     }
 
     public void update() {
         discoveredTiles.add(tile);
-        board.getNeighbours(tile).forEach(neighbour -> {
-            if (tile.isWindy() || tile.isBadSmelling())
-                boundaryTiles.put(neighbour, 0.2);
-            else
-                boundaryTiles.put(neighbour, 0.0);
-        });
-        entriesSortedByValues(boundaryTiles);
+        tile.setStroke(Paint.valueOf("green"));
+        tile.setStrokeWidth(2);
+        boundaryTiles.firstEntry().getValue().remove(tile);
+        if (boundaryTiles.firstEntry().getValue().isEmpty()) {
+            boundaryTiles.remove(boundaryTiles.firstKey());
+        }
+        initBoundaryTiles();
     }
 
-    private void entriesSortedByValues(HashMap<Tile, Double> map) {
-        HashMap<Tile, Double> result = new HashMap<>();
-        map.entrySet().stream()
-                .sorted(HashMap.Entry.comparingByValue())
-                .forEachOrdered(x -> result.put(x.getKey(), x.getValue()));
+    private void initBoundaryTiles() {
+        board.getNeighbours(tile).forEach(neighbour -> {
+            if (!discoveredTiles.contains(neighbour)) {
+                if (tile.isWindy() || tile.isBadSmelling()) {
+                    if (!boundaryTiles.containsKey(0.2))
+                        boundaryTiles.put(0.2, new ArrayList<>());
+
+                    // Add only if the neighbour is not already in the boundary tiles with a lower probability
+                    if (boundaryTiles.values().stream().noneMatch(tiles -> tiles.contains(neighbour)))
+                        boundaryTiles.get(0.2).add(neighbour);
+                } else {
+                    if (!boundaryTiles.containsKey(0.0))
+                        boundaryTiles.put(0.0, new ArrayList<>());
+
+                    // Remove the neighbour from the boundary tiles if it is already into with higher probability
+                    if (boundaryTiles.values().stream().anyMatch(tiles -> tiles.contains(neighbour)))
+                        boundaryTiles.values().forEach(tiles -> tiles.remove(neighbour));
+                    boundaryTiles.get(0.0).add(neighbour);
+                }
+            }
+        });
     }
 }

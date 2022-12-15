@@ -103,7 +103,7 @@ public class Decision {
      * @param goal the goal tile
      * @return TreeMap with the evaluation and the list of actions
      */
-    /*public List<Action> bidirectionnalSearch(Tile goal) {
+    public List<Action> bidirectionnalSearch(Tile goal) {
         Tile communTile = null;
         LinkedHashSet<Tile> alreadySeenStart = new LinkedHashSet<>();
         LinkedHashSet<Tile> alreadySeenGoal = new LinkedHashSet<>();
@@ -116,8 +116,8 @@ public class Decision {
         boolean wayFinded = false;
         while (!wayFinded) {
             // Propagation of start and final tree
-            propagate(wayStart, alreadySeenStart);
-            propagate(wayGoal, alreadySeenGoal);
+            propagate(wayStart);
+            propagate(wayGoal);
 
             // Update of the forbiddenStart list and wayStart tree
             leafStart.clear();
@@ -141,28 +141,27 @@ public class Decision {
         secondPart.remove(0);
         firstPart.addAll(secondPart);
         return convertPathToActions(firstPart);
-    }*/
+    }
 
     /**
      * This method is used to propagate the search tree
      * @param tree the search tree
-     * @param forbiddenTiles the forbidden tiles
      */
-    /*public void propagate(SearchTree tree, LinkedHashSet<Tile> forbiddenTiles) {
+    public void propagate(SearchTree tree) {
         List<SearchTree> leafs = tree.getLeaf();
         leafs.forEach(leaf -> {
-            List<Tile> neighbours = sensor.getBoard().getNeighbors(leaf.getNode()).stream()
+            List<Tile> neighbours = sensor.getBoard().getNeighbours(leaf.getNode()).stream()
                     .filter((neighbour -> sensor.getDiscoveredTiles().contains(neighbour))).collect(Collectors.toList());
             leaf.addSons(neighbours);
         });
-    }*/
+    }
 
     /**
      * This method is used to convert a path to a list of actions
      * @param path list of tiles
      * @return TreeMap with the evaluation and the list of actions
      */
-    /*public List<Action> convertPathToActions(List<Tile> path) {
+    public List<Action> convertPathToActions(List<Tile> path) {
         List<Action> actionsList = new ArrayList<>();
         for (int i = 0; i < path.size() - 1; i++) {
             if (path.get(i).getX() < path.get(i + 1).getX())
@@ -175,12 +174,13 @@ public class Decision {
                 actionsList.add(Action.MOVE_UP);
         }
         return actionsList;
-    }*/
+    }
 
-    public Action makeRule() {
-        HashMap<Tile, Double> boundaryTiles = sensor.getBoundaryTiles();
-        Action action = getAction(sensor.getTile(), boundaryTiles.entrySet().iterator().next().getKey());
-        return action;
+    public List<Action> makeRule() {
+        TreeMap<Double, List<Tile>> boundaryTiles = sensor.getBoundaryTiles();
+        List<Tile> tiles = boundaryTiles.firstEntry().getValue();
+        Random rand = new Random();
+        return bidirectionnalSearch(tiles.get(rand.nextInt(tiles.size())));
     }
 
     /**
@@ -202,14 +202,7 @@ public class Decision {
         return null;
     }
 
-    private Tile getDiscoveredNeighbours(Tile currentTile) {
-        Random random = new Random();
-        List<Tile> neighbours = sensor.getBoard().getNeighbours(currentTile);
-        neighbours.retainAll(sensor.getDiscoveredTiles());
-        return neighbours.get(random.nextInt(neighbours.size()));
-    }
-
     public void nextLevel() {
-        updateEvaluation(10*sensor.getBoard().getHeight()*sensor.getBoard().getWidth());
+        updateEvaluation(10 * sensor.getBoard().getHeight() * sensor.getBoard().getWidth());
     }
 }
