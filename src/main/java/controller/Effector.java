@@ -95,28 +95,51 @@ public class Effector {
         Tile tile = sensor.getBoard().getTile(sensor.getXPosition(), sensor.getYPosition() - 1);
         if(tile.isMonster()) {
             tile.setMonster(false);
+            removeBadSmelling(tile);
         }
     }
 
     public void throwDown() {
-        Tile tile = sensor.getBoard().getTile(sensor.getXPosition(), sensor.getYPosition() - 1);
+        Tile tile = sensor.getBoard().getTile(sensor.getXPosition(), sensor.getYPosition() + 1);
         if(tile.isMonster()) {
             tile.setMonster(false);
+            removeBadSmelling(tile);
         }
     }
 
     public void throwLeft() {
-        Tile tile = sensor.getBoard().getTile(sensor.getXPosition(), sensor.getYPosition() - 1);
+        Tile tile = sensor.getBoard().getTile(sensor.getXPosition() - 1, sensor.getYPosition());
         if(tile.isMonster()) {
             tile.setMonster(false);
+            removeBadSmelling(tile);
         }
     }
 
     public void throwRight() {
-        Tile tile = sensor.getBoard().getTile(sensor.getXPosition(), sensor.getYPosition() - 1);
+        Tile tile = sensor.getBoard().getTile(sensor.getXPosition() + 1, sensor.getYPosition());
         if(tile.isMonster()) {
             tile.setMonster(false);
+            removeBadSmelling(tile);
         }
+    }
+
+    private void removeBadSmelling(Tile tile) {
+        List<Tile> neighbours = sensor.getBoard().getNeighbours(tile);
+        neighbours.forEach(neighbour -> {
+            neighbour.setBadSmelling(false);
+            neighbour.draw();
+        });
+
+        List<Tile> allNeighbours = sensor.getBoard().getAllNeighbours(tile);
+        allNeighbours.forEach(neighbour -> {
+            if (neighbour.isMonster()) {
+                List<Tile> neighboursOfNeighbour = sensor.getBoard().getNeighbours(neighbour);
+                neighboursOfNeighbour.forEach(neighbourOfNeighbour -> {
+                    neighbourOfNeighbour.setBadSmelling(true);
+                    neighbourOfNeighbour.draw();
+                });
+            }
+        });
     }
 }
 

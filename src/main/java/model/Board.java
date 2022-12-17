@@ -65,6 +65,29 @@ public class Board {
         return neighbors;
     }
 
+    public List<Tile> getAllNeighbours(Tile tile) {
+        int x = (int) tile.getX();
+        int y = (int) tile.getY();
+        List<Tile> neighbors = new ArrayList<>();
+        if (x > 0)
+            neighbors.add(getTile(x - 1, y));
+        if (x < width - 1)
+            neighbors.add(getTile(x + 1, y));
+        if (y > 0)
+            neighbors.add(getTile(x, y - 1));
+        if (y < height - 1)
+            neighbors.add(getTile(x, y + 1));
+        if (x > 0 && y > 0)
+            neighbors.add(getTile(x - 1, y - 1));
+        if (x > 0 && y < height - 1)
+            neighbors.add(getTile(x - 1, y + 1));
+        if (x < width - 1 && y > 0)
+            neighbors.add(getTile(x + 1, y - 1));
+        if (x < width - 1 && y < height - 1)
+            neighbors.add(getTile(x + 1, y + 1));
+        return neighbors;
+    }
+
     public List<Tile> getDiscoveredNeighbours(Tile tile, LinkedHashSet<Tile> discoveredTiles) {
         List<Tile> neighbours = getNeighbours(tile);
         List<Tile> discoveredNeighbours = new ArrayList<>();
@@ -74,17 +97,6 @@ public class Board {
             }
         }
         return discoveredNeighbours;
-    }
-
-    public int getNumberOfUndiscoveredNeighbours(Tile tile, LinkedHashSet<Tile> discoveredTiles) {
-        List<Tile> neighbours = getNeighbours(tile);
-        int numberOfUndiscoveredNeighbours = 0;
-        for (Tile neighbour : neighbours) {
-            if (!discoveredTiles.contains(neighbour)) {
-                numberOfUndiscoveredNeighbours++;
-            }
-        }
-        return numberOfUndiscoveredNeighbours;
     }
 
     public void generateItems() {

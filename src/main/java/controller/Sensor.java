@@ -69,7 +69,18 @@ public class Sensor {
     private void initBoundaryTiles() {
         board.getNeighbours(tile).forEach(neighbour -> {
             if (!discoveredTiles.contains(neighbour)) {
-                if (tile.isWindy() || tile.isBadSmelling()) {
+                if (tile.isWindy()) {
+                    if (!boundaryTiles.containsKey(0.3))
+                        boundaryTiles.put(0.3, new ArrayList<>());
+
+                    // Add only if the neighbour is not already in the boundary tiles with a lower probability
+                    if (tileNotExistsWithSameProbability(neighbour, 0.3) && tileNotExistsWithProbabilityZero(neighbour)) {
+                        boundaryTiles.get(0.3).add(neighbour);
+                        neighbour.setStroke(Paint.valueOf("blue"));
+                        neighbour.setStrokeWidth(3);
+                        neighbour.setProbability(0.3);
+                    }
+                } else if (tile.isBadSmelling()) {
                     if (!boundaryTiles.containsKey(0.2))
                         boundaryTiles.put(0.2, new ArrayList<>());
 
@@ -78,6 +89,7 @@ public class Sensor {
                         boundaryTiles.get(0.2).add(neighbour);
                         neighbour.setStroke(Paint.valueOf("blue"));
                         neighbour.setStrokeWidth(3);
+                        neighbour.setProbability(0.2);
                     }
                 } else {
                     if (!boundaryTiles.containsKey(0.0))
@@ -92,6 +104,7 @@ public class Sensor {
                         boundaryTiles.get(0.0).add(neighbour);
                         neighbour.setStroke(Paint.valueOf("blue"));
                         neighbour.setStrokeWidth(3);
+                        neighbour.setProbability(0.0);
                     }
                 }
             }
@@ -111,67 +124,69 @@ public class Sensor {
                     List<Tile> discoveredNeighbours = board.getDiscoveredNeighbours(tile, discoveredTiles);
                     if (discoveredNeighbours.size() == 1) {
                         Tile discoveredNeighbour = discoveredNeighbours.get(0);
-                        if (discoveredNeighbour.isWindy() || discoveredNeighbour.isBadSmelling()) {
-                            System.out.println("Cas 1 avec vent ou mauvaise odeur " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.2");
+                        if (discoveredNeighbour.isWindy()) {
+                            if (!boundaryTiles.containsKey(0.3))
+                                boundaryTiles.put(0.3, new ArrayList<>());
+                            if (tileNotExistsWithSameProbability(tile, 0.3) && tileNotExistsWithProbabilityZero(tile)) {
+                                boundaryTiles.get(0.3).add(tile);
+                                tile.setProbability(0.3);
+                            }
+                            removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.3);
+                        } else if (discoveredNeighbour.isBadSmelling()) {
                             if (!boundaryTiles.containsKey(0.2))
                                 boundaryTiles.put(0.2, new ArrayList<>());
-                            if (tileNotExistsWithSameProbability(tile, 0.2) && tileNotExistsWithProbabilityZero(tile))
+                            if (tileNotExistsWithSameProbability(tile, 0.2) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(0.2).add(tile);
+                                tile.setProbability(0.2);
+                            }
                         } else {
-                            System.out.println("Cas 1 sans vent ni mauvaise odeur " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.0");
                             if (!boundaryTiles.containsKey(0.0))
                                 boundaryTiles.put(0.0, new ArrayList<>());
                             if (tileAlreadyExistsWithHigherProbability(tile)) {
                                 boundaryTiles.values().forEach(tiles1 -> tiles1.remove(tile));
-                                System.out.println("Suppression");
                             }
                             if (tileNotExistsWithSameProbability(tile, 0.0)) {
                                 boundaryTiles.get(0.0).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.0);
                             }
                         }
                     } else if (discoveredNeighbours.size() == 2) {
                         Tile discoveredNeighbour1 = discoveredNeighbours.get(0);
                         Tile discoveredNeighbour2 = discoveredNeighbours.get(1);
                         if (discoveredNeighbour1.isWindy() && discoveredNeighbour2.isWindy()) {
-                            System.out.println("Cas 2 avec vent sur les 2 voisins " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.6");
                             if (!boundaryTiles.containsKey(0.6))
                                 boundaryTiles.put(0.6, new ArrayList<>());
                             if (tileNotExistsWithSameProbability(tile, 0.6) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(0.6).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.6);
                             }
                             removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.6);
                         } else if (discoveredNeighbour1.isBadSmelling() && discoveredNeighbour2.isBadSmelling()) {
-                            System.out.println("Cas 2 avec mauvaise odeur sur les 2 voisins " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.6");
-                            if (!boundaryTiles.containsKey(0.6))
-                                boundaryTiles.put(0.6, new ArrayList<>());
-                            if (tileNotExistsWithSameProbability(tile, 0.6) && tileNotExistsWithProbabilityZero(tile)) {
-                                boundaryTiles.get(0.6).add(tile);
-                                System.out.println("Ajout");
+                            if (!boundaryTiles.containsKey(0.5))
+                                boundaryTiles.put(0.5, new ArrayList<>());
+                            if (tileNotExistsWithSameProbability(tile, 0.5) && tileNotExistsWithProbabilityZero(tile)) {
+                                boundaryTiles.get(0.5).add(tile);
+                                tile.setProbability(0.5);
                             }
-                            removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.6);
+                            removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.5);
                         } else if ((discoveredNeighbour1.isWindy() || discoveredNeighbour1.isBadSmelling()) ||
                                 (discoveredNeighbour2.isWindy() || discoveredNeighbour2.isBadSmelling())) {
-                            System.out.println("Cas 2 avec vent ou mauvaise odeur sur un seul voisin " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.4");
                             if (!boundaryTiles.containsKey(0.4))
                                 boundaryTiles.put(0.4, new ArrayList<>());
                             if (tileNotExistsWithSameProbability(tile, 0.4) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(0.4).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.4);
                             }
                             removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.4);
                         } else {
-                            System.out.println("Cas 2 sans vent ni mauvaise odeur " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.0");
                             if (!boundaryTiles.containsKey(0.0))
                                 boundaryTiles.put(0.0, new ArrayList<>());
                             if (tileAlreadyExistsWithHigherProbability(tile)) {
                                 boundaryTiles.values().forEach(tiles1 -> tiles1.remove(tile));
-                                System.out.println("Suppression");
                             }
                             if (tileNotExistsWithSameProbability(tile, 0.0)) {
                                 boundaryTiles.get(0.0).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.0);
                             }
                         }
                     } else if (discoveredNeighbours.size() == 3) {
@@ -179,59 +194,53 @@ public class Sensor {
                         Tile discoveredNeighbour2 = discoveredNeighbours.get(1);
                         Tile discoveredNeighbour3 = discoveredNeighbours.get(2);
                         if (discoveredNeighbour1.isWindy() && discoveredNeighbour2.isWindy() && discoveredNeighbour3.isWindy()) {
-                            System.out.println("Cas 3 avec vent sur les 3 voisins " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition()  + " avec proba 0.8");
                             if (!boundaryTiles.containsKey(0.8))
                                 boundaryTiles.put(0.8, new ArrayList<>());
                             if (tileNotExistsWithSameProbability(tile, 0.8) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(0.8).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.8);
                             }
                             removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.8);
                         } else if (discoveredNeighbour1.isBadSmelling() && discoveredNeighbour2.isBadSmelling() && discoveredNeighbour3.isBadSmelling()) {
-                            System.out.println("Cas 3 avec mauvaise odeur sur les 3 voisins " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition()  + " avec proba 0.8");
-                            if (!boundaryTiles.containsKey(0.8))
-                                boundaryTiles.put(0.8, new ArrayList<>());
-                            if (tileNotExistsWithSameProbability(tile, 0.8) && tileNotExistsWithProbabilityZero(tile)) {
-                                boundaryTiles.get(0.8).add(tile);
-                                System.out.println("Ajout");
+                            if (!boundaryTiles.containsKey(0.7))
+                                boundaryTiles.put(0.7, new ArrayList<>());
+                            if (tileNotExistsWithSameProbability(tile, 0.7) && tileNotExistsWithProbabilityZero(tile)) {
+                                boundaryTiles.get(0.7).add(tile);
+                                tile.setProbability(0.7);
                             }
-                            removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.8);
+                            removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.7);
                         } else if ((discoveredNeighbour1.isWindy() || discoveredNeighbour1.isBadSmelling()) &&
                                 (discoveredNeighbour2.isWindy() || discoveredNeighbour2.isBadSmelling()) ||
                                 (discoveredNeighbour1.isWindy() || discoveredNeighbour1.isBadSmelling()) &&
                                         (discoveredNeighbour3.isWindy() || discoveredNeighbour3.isBadSmelling()) ||
                                 (discoveredNeighbour2.isWindy() || discoveredNeighbour2.isBadSmelling()) &&
                                         (discoveredNeighbour3.isWindy() || discoveredNeighbour3.isBadSmelling())) {
-                            System.out.println("Cas 3 avec vent ou mauvaise odeur sur 2 voisins " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.6");
                             if (!boundaryTiles.containsKey(0.6))
                                 boundaryTiles.put(0.6, new ArrayList<>());
                             if (tileNotExistsWithSameProbability(tile, 0.6) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(0.6).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.6);
                             }
                             removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.6);
                         } else if ((discoveredNeighbour1.isWindy() || discoveredNeighbour1.isBadSmelling()) ||
                                 (discoveredNeighbour2.isWindy() || discoveredNeighbour2.isBadSmelling()) ||
                                 (discoveredNeighbour3.isWindy() || discoveredNeighbour3.isBadSmelling())) {
-                            System.out.println("Cas 3 avec vent ou mauvaise odeur sur un seul voisin " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.5");
                             removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.5);
                             if (!boundaryTiles.containsKey(0.5))
                                 boundaryTiles.put(0.5, new ArrayList<>());
                             if (tileNotExistsWithSameProbability(tile, 0.5) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(0.5).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.5);
                             }
                         } else {
-                            System.out.println("Cas 3 sans vent ni mauvaise odeur " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.0");
                             if (!boundaryTiles.containsKey(0.0))
                                 boundaryTiles.put(0.0, new ArrayList<>());
                             if (tileAlreadyExistsWithHigherProbability(tile)) {
                                 boundaryTiles.values().forEach(tiles1 -> tiles1.remove(tile));
-                                System.out.println("Suppression");
                             }
                             if (tileNotExistsWithSameProbability(tile, 0.0)) {
                                 boundaryTiles.get(0.0).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.0);
                             }
                         }
                     } else {
@@ -240,23 +249,21 @@ public class Sensor {
                         Tile discoveredNeighbour3 = discoveredNeighbours.get(2);
                         Tile discoveredNeighbour4 = discoveredNeighbours.get(3);
                         if (discoveredNeighbour1.isWindy() && discoveredNeighbour2.isWindy() && discoveredNeighbour3.isWindy() && discoveredNeighbour4.isWindy()) {
-                            System.out.println("Cas 4 avec vent sur les 4 voisins " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 1.0");
                             if (!boundaryTiles.containsKey(1.0))
                                 boundaryTiles.put(1.0, new ArrayList<>());
                             if (tileNotExistsWithSameProbability(tile, 1.0) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(1.0).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(1.0);
                             }
                             removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 1.0);
                         } else if (discoveredNeighbour1.isBadSmelling() && discoveredNeighbour2.isBadSmelling() && discoveredNeighbour3.isBadSmelling() && discoveredNeighbour4.isBadSmelling()) {
-                            System.out.println("Cas 4 avec mauvaise odeur sur les 4 voisins " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 1.0");
-                            if (!boundaryTiles.containsKey(1.0))
-                                boundaryTiles.put(1.0, new ArrayList<>());
-                            if (tileNotExistsWithSameProbability(tile, 1.0) && tileNotExistsWithProbabilityZero(tile)) {
-                                boundaryTiles.get(1.0).add(tile);
-                                System.out.println("Ajout");
+                            if (!boundaryTiles.containsKey(0.9))
+                                boundaryTiles.put(0.9, new ArrayList<>());
+                            if (tileNotExistsWithSameProbability(tile, 0.9) && tileNotExistsWithProbabilityZero(tile)) {
+                                boundaryTiles.get(0.9).add(tile);
+                                tile.setProbability(0.9);
                             }
-                            removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 1.0);
+                            removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.9);
                         } else if ((discoveredNeighbour1.isWindy() || discoveredNeighbour1.isBadSmelling()) &&
                                 (discoveredNeighbour2.isWindy() || discoveredNeighbour2.isBadSmelling()) &&
                                 (discoveredNeighbour3.isWindy() || discoveredNeighbour3.isBadSmelling()) ||
@@ -269,12 +276,11 @@ public class Sensor {
                                 (discoveredNeighbour2.isWindy() || discoveredNeighbour2.isBadSmelling()) &&
                                         (discoveredNeighbour3.isWindy() || discoveredNeighbour3.isBadSmelling()) &&
                                         (discoveredNeighbour4.isWindy() || discoveredNeighbour4.isBadSmelling())) {
-                            System.out.println("Cas 4 avec vent ou mauvaise odeur sur 3 voisins " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.8");
                             if (!boundaryTiles.containsKey(0.8))
                                 boundaryTiles.put(0.8, new ArrayList<>());
                             if (tileNotExistsWithSameProbability(tile, 0.8) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(0.8).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.8);
                             }
                             removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.8);
                         } else if ((discoveredNeighbour1.isWindy() || discoveredNeighbour1.isBadSmelling()) &&
@@ -289,37 +295,33 @@ public class Sensor {
                                         (discoveredNeighbour4.isWindy() || discoveredNeighbour4.isBadSmelling()) ||
                                 (discoveredNeighbour3.isWindy() || discoveredNeighbour3.isBadSmelling()) &&
                                         (discoveredNeighbour4.isWindy() || discoveredNeighbour4.isBadSmelling())) {
-                            System.out.println("Cas 4 avec vent ou mauvaise odeur sur 2 voisins " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.6");
                             if (!boundaryTiles.containsKey(0.6))
                                 boundaryTiles.put(0.6, new ArrayList<>());
                             if (tileNotExistsWithSameProbability(tile, 0.6) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(0.6).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.6);
                             }
                             removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.6);
                         } else if ((discoveredNeighbour1.isWindy() || discoveredNeighbour1.isBadSmelling()) ||
                                 (discoveredNeighbour2.isWindy() || discoveredNeighbour2.isBadSmelling()) ||
                                 (discoveredNeighbour3.isWindy() || discoveredNeighbour3.isBadSmelling()) ||
                                 (discoveredNeighbour4.isWindy() || discoveredNeighbour4.isBadSmelling())) {
-                            System.out.println("Cas 4 avec vent ou mauvaise odeur sur 1 voisin " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.4");
                             if (!boundaryTiles.containsKey(0.4))
                                 boundaryTiles.put(0.4, new ArrayList<>());
                             if (tileNotExistsWithSameProbability(tile, 0.4) && tileNotExistsWithProbabilityZero(tile)) {
                                 boundaryTiles.get(0.4).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.4);
                             }
                             removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.4);
                         } else {
-                            System.out.println("Cas 4 sans vent ni mauvaise odeur " + "Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec proba 0.0");
                             if (!boundaryTiles.containsKey(0.0))
                                 boundaryTiles.put(0.0, new ArrayList<>());
                             if (tileAlreadyExistsWithHigherProbability(tile)) {
                                 boundaryTiles.values().forEach(tiles1 -> tiles1.remove(tile));
-                                System.out.println("Suppression");
                             }
                             if (tileNotExistsWithSameProbability(tile, 0.0)) {
                                 boundaryTiles.get(0.0).add(tile);
-                                System.out.println("Ajout");
+                                tile.setProbability(0.0);
                             }
                         }
                     }
@@ -330,10 +332,8 @@ public class Sensor {
 
     private void removeTileAlreadyExistingWithLowerProbabilityButNotZero(Tile tile, double probability) {
         boundaryTiles.forEach((key, value) -> {
-            if (key < probability && key != 0.0) {
+            if (key < probability && key != 0.0)
                 value.remove(tile);
-                System.out.println("Suppression Tile: " + tile.getXPosition() + " " + tile.getYPosition() + " avec probabilité: " + key);
-            }
         });
         boundaryTiles.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }

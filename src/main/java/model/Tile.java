@@ -7,12 +7,12 @@ import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 /**
  * This class represents a tile of the board
  */
 public class Tile extends Rectangle {
+    @Getter @Setter
+    private double probability;
     @Getter @Setter
     private boolean character;
     @Getter @Setter

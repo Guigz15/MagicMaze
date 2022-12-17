@@ -89,48 +89,41 @@ public class Decision {
      * @return TreeMap with the evaluation and the list of actions
      */
     public List<Action> convertPathToActions(List<Tile> path) {
+        List<Double> monsterProbabilities = new ArrayList<>(Arrays.asList(0.2, 0.5, 0.7, 0.9));
         List<Action> actionsList = new ArrayList<>();
         for (int i = 0; i < path.size() - 1; i++) {
-            if (path.get(i).getX() < path.get(i + 1).getX())
+            double probability = path.get(i + 1).getProbability();
+            if (path.get(i).getX() < path.get(i + 1).getX()) {
+                if (monsterProbabilities.contains(probability) && i == path.size() - 2) {
+                    actionsList.add(Action.THROW_RIGHT);
+                }
                 actionsList.add(Action.MOVE_RIGHT);
-            else if (path.get(i).getX() > path.get(i + 1).getX())
+            } else if (path.get(i).getX() > path.get(i + 1).getX()) {
+                if (monsterProbabilities.contains(probability) && i == path.size() - 2) {
+                    actionsList.add(Action.THROW_LEFT);
+                }
                 actionsList.add(Action.MOVE_LEFT);
-            else if (path.get(i).getY() < path.get(i + 1).getY())
+            } else if (path.get(i).getY() < path.get(i + 1).getY()) {
+                if (monsterProbabilities.contains(probability) && i == path.size() - 2) {
+                    actionsList.add(Action.THROW_DOWN);
+                }
                 actionsList.add(Action.MOVE_DOWN);
-            else if (path.get(i).getY() > path.get(i + 1).getY())
+            } else if (path.get(i).getY() > path.get(i + 1).getY()) {
+                if (monsterProbabilities.contains(probability) && i == path.size() - 2) {
+                    actionsList.add(Action.THROW_UP);
+                }
                 actionsList.add(Action.MOVE_UP);
+            }
         }
+
         return actionsList;
     }
 
     public List<Action> makeRule() {
         TreeMap<Double, List<Tile>> boundaryTiles = sensor.getBoundaryTiles();
-        /*if (boundaryTiles.firstKey() != 0.0) {
-            sensor.computeProbabilities(boundaryTiles);
-            System.out.println("Proba");
-        }*/
         List<Tile> tiles = boundaryTiles.firstEntry().getValue();
         Random rand = new Random();
         return bidirectionnalSearch(tiles.get(rand.nextInt(tiles.size())));
-    }
-
-    /**
-     * Get the action to go from currentTile to destinationTile
-     * @param currentTile
-     * @param destinationTile
-     * @return action to go from currentTile to destinationTile
-     */
-    private Action getAction(Tile currentTile, Tile destinationTile) {
-        if (currentTile.getX() < destinationTile.getX()) {
-            return Action.MOVE_RIGHT;
-        } else if (currentTile.getX() > destinationTile.getX()) {
-            return Action.MOVE_LEFT;
-        } else if (currentTile.getY() < destinationTile.getY()) {
-            return Action.MOVE_DOWN;
-        } else if (currentTile.getY() > destinationTile.getY()) {
-            return Action.MOVE_UP;
-        }
-        return null;
     }
 
     public void nextLevel() {
