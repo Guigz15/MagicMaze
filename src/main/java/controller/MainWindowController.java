@@ -74,6 +74,12 @@ public class MainWindowController implements Initializable {
                 List<Action> actions = character.getDecision().makeRule();
                 character.getEffector().doActions(character, actions);
                 character.getSensor().update();
+                character.getSensor().getBoundaryTiles().forEach((probability, tiles) -> {
+                    System.out.println("Probability: " + probability);
+                    tiles.forEach(tile -> {
+                        System.out.println("Tile: " + tile.getXPosition() + " " + tile.getYPosition());
+                    });
+                });
             }
         });
     }

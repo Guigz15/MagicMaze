@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -62,6 +63,28 @@ public class Board {
         if (y < height - 1)
             neighbors.add(getTile(x, y + 1));
         return neighbors;
+    }
+
+    public List<Tile> getDiscoveredNeighbours(Tile tile, LinkedHashSet<Tile> discoveredTiles) {
+        List<Tile> neighbours = getNeighbours(tile);
+        List<Tile> discoveredNeighbours = new ArrayList<>();
+        for (Tile neighbour : neighbours) {
+            if (discoveredTiles.contains(neighbour)) {
+                discoveredNeighbours.add(neighbour);
+            }
+        }
+        return discoveredNeighbours;
+    }
+
+    public int getNumberOfUndiscoveredNeighbours(Tile tile, LinkedHashSet<Tile> discoveredTiles) {
+        List<Tile> neighbours = getNeighbours(tile);
+        int numberOfUndiscoveredNeighbours = 0;
+        for (Tile neighbour : neighbours) {
+            if (!discoveredTiles.contains(neighbour)) {
+                numberOfUndiscoveredNeighbours++;
+            }
+        }
+        return numberOfUndiscoveredNeighbours;
     }
 
     public void generateItems() {

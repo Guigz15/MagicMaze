@@ -3,13 +3,11 @@ package controller;
 import model.Action;
 import model.Character;
 import model.Tile;
-
 import java.util.List;
 
 public class Effector {
 
     private Sensor sensor;
-
 
     public Effector(Sensor sensor) {
         this.sensor = sensor;
@@ -25,8 +23,7 @@ public class Effector {
         int oldY = oldTile.getYPosition();
         switch (action) {
             case MOVE_UP:
-                if(oldY > 0)
-                {
+                if(oldY > 0) {
                     oldTile.setCharacter(false);
                     oldTile.draw();
                     moveUp();
@@ -34,8 +31,7 @@ public class Effector {
                 }
                 break;
             case MOVE_DOWN:
-                if(oldTile.getY() < sensor.getBoard().getHeight() - 1)
-                {
+                if(oldTile.getY() < sensor.getBoard().getHeight() - 1) {
                     oldTile.setCharacter(false);
                     oldTile.draw();
                     moveDown();
@@ -43,8 +39,7 @@ public class Effector {
                 }
                 break;
             case MOVE_LEFT:
-                if (oldX > 0)
-                {
+                if (oldX > 0) {
                     oldTile.setCharacter(false);
                     oldTile.draw();
                     moveLeft();
@@ -52,8 +47,7 @@ public class Effector {
                 }
                 break;
             case MOVE_RIGHT:
-                if (oldX < sensor.getBoard().getWidth()-1)
-                {
+                if (oldX < sensor.getBoard().getWidth()-1) {
                     oldTile.setCharacter(false);
                     oldTile.draw();
                     moveRight();

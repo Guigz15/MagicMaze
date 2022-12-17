@@ -25,79 +25,6 @@ public class Decision {
         evaluation += bonus;
     }
 
-    /*public List<Action> makeRule ()
-    {
-        TreeMap<Integer,List<List<Action>>> ways = new TreeMap<>();
-        System.out.println("unexplored tiles : "+ sensor.getUnexploredTiles());
-        sensor.getUnexploredTiles().forEach( unexploredTile->
-        {
-            TreeMap<Integer,List<Action>> temp = discoverTile(unexploredTile);
-            System.out.println(temp);
-            int keyTemp = temp.keySet().iterator().next();
-            if (ways.containsKey(keyTemp))
-            {
-                ways.get(keyTemp).add(temp.get(keyTemp));
-            } else {
-                ways.put(keyTemp, new ArrayList<>());
-                ways.get(keyTemp).add(temp.get(keyTemp));
-            }
-        });
-        Random rand = new Random();
-        System.out.println(ways);
-        int key = ways.lastKey();
-        System.out.println("chemin selectionne : " + ways.get(key).get(rand.nextInt(ways.get(key).size())));
-        return ways.get(key).get(rand.nextInt(ways.get(key).size()));
-
-    }*/
-    /*public TreeMap<Integer,List<Action>> discoverTile(Tile goal)
-    {
-        int score = 0;
-        List<Tile> neighborGoal = sensor.getBoard().getNeighbors(goal);
-        List<Tile> subgoal = new ArrayList<>();
-        for (Tile tile : sensor.getDiscoveredTiles())
-        {
-            if(neighborGoal.contains(tile))
-            {
-                if (tile.isWindy() || tile.isBadSmelling())
-                {
-                    subgoal.add(tile);
-                }
-                else
-                {
-                    subgoal.add(tile);
-                    break;
-                }
-
-            }
-        }
-        int lastIndex = subgoal.size()-1;
-        if (subgoal.get(lastIndex).isWindy() || subgoal.get(lastIndex).isBadSmelling())
-        {
-            score -= 5;
-        }
-        List<Action> actions = bidirectionnalSearch(subgoal.get(lastIndex));
-        if(subgoal.get(lastIndex).getX() < goal.getX())
-        {
-            actions.add(Action.MOVE_RIGHT);
-        }
-        else if(subgoal.get(lastIndex).getX() > goal.getX())
-        {
-            actions.add(Action.MOVE_LEFT);
-        }
-        else if(subgoal.get(lastIndex).getY() < goal.getY())
-        {
-            actions.add(Action.MOVE_DOWN);
-        }
-        else
-        {
-            actions.add(Action.MOVE_UP);
-        }
-        score += actions.size();
-        TreeMap<Integer, List<Action>> way= new TreeMap<>();
-        way.put(score, actions);
-        return way;
-    }*/
-
     /**
      * This method implements the bidirectional search algorithm
      * @param goal the goal tile
@@ -178,6 +105,10 @@ public class Decision {
 
     public List<Action> makeRule() {
         TreeMap<Double, List<Tile>> boundaryTiles = sensor.getBoundaryTiles();
+        /*if (boundaryTiles.firstKey() != 0.0) {
+            sensor.computeProbabilities(boundaryTiles);
+            System.out.println("Proba");
+        }*/
         List<Tile> tiles = boundaryTiles.firstEntry().getValue();
         Random rand = new Random();
         return bidirectionnalSearch(tiles.get(rand.nextInt(tiles.size())));
