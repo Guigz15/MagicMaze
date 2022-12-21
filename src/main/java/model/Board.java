@@ -5,12 +5,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Class that represents the board of the game
+ */
 public class Board {
     @Getter @Setter
     private List<List<Tile>> tiles;
@@ -46,7 +48,7 @@ public class Board {
     }
 
     /**
-     * Get all neighbours of a tile
+     * Get possible neighbours of a tile
      * @param tile to get neighbours
      * @return list of neighbours of the tile
      */
@@ -65,6 +67,11 @@ public class Board {
         return neighbors;
     }
 
+    /**
+     * Get all neighbours of a tile
+     * @param tile to get neighbours
+     * @return list of neighbours of the tile
+     */
     public List<Tile> getAllNeighbours(Tile tile) {
         int x = (int) tile.getX();
         int y = (int) tile.getY();
@@ -88,6 +95,12 @@ public class Board {
         return neighbors;
     }
 
+    /**
+     * Get discovered neighbours of a tile
+     * @param tile to get neighbours
+     * @param discoveredTiles list of discovered tiles
+     * @return list of discovered neighbours of the tile
+     */
     public List<Tile> getDiscoveredNeighbours(Tile tile, LinkedHashSet<Tile> discoveredTiles) {
         List<Tile> neighbours = getNeighbours(tile);
         List<Tile> discoveredNeighbours = new ArrayList<>();
@@ -99,6 +112,9 @@ public class Board {
         return discoveredNeighbours;
     }
 
+    /**
+     * Method that generates items randomly on the board
+     */
     public void generateItems() {
         tiles.forEach(row -> row.forEach(tile -> {
             Random random = new Random();
@@ -129,6 +145,13 @@ public class Board {
         portalTile.draw();
     }
 
+    /**
+     * Method called when the character changes level
+     * @param gridPane
+     * @param character
+     * @param height of the new level
+     * @param width of the new level
+     */
     public void updateBoardSize(GridPane gridPane, Character character, int height, int width) {
         gridPane.getChildren().clear();
         setHeight(height);
@@ -169,6 +192,10 @@ public class Board {
         characterTile.draw();
     }
 
+    /**
+     * Method that returns a random empty tile
+     * @return random empty tile
+     */
     public Tile getRandomEmptyTile() {
         Random random = new Random();
         int x = random.nextInt(width);

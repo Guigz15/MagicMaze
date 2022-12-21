@@ -1,5 +1,8 @@
 package model;
 
+/**
+ * Class that represents an action
+ */
 public enum Action {
     MOVE_UP,
     MOVE_DOWN,

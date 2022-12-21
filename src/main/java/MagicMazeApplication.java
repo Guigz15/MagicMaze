@@ -6,10 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.Getter;
-
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Class that represents the main application
+ */
 public class MagicMazeApplication extends Application {
 
     @Getter

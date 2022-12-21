@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This class represents a tile of the board
+ * Class that represents a tile of the board
  */
 public class Tile extends Rectangle {
     @Getter @Setter
@@ -144,7 +144,19 @@ public class Tile extends Rectangle {
         }
     }
 
+    /**
+     * This method is used to check if a tile has an item on it
+     * @return true if the tile has an item on it, false otherwise
+     */
     public boolean hasItem() {
         return isMonster() || isCrevasse() || isPortal();
+    }
+
+    /**
+     * This method is used to check if a tile has only windy item on it
+     * @return true if windy, false otherwise
+     */
+    public boolean isOnlyWindy() {
+        return isWindy() && !isBadSmelling();
     }
 }

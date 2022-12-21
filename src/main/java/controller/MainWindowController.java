@@ -12,11 +12,13 @@ import lombok.Setter;
 import model.Action;
 import model.Board;
 import model.Tile;
-
 import java.util.List;
 import java.util.ResourceBundle;
 import model.Character;
 
+/**
+ * Class that represents the controller of the main window
+ */
 public class MainWindowController implements Initializable {
 
     @FXML

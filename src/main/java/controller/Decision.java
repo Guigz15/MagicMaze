@@ -5,10 +5,12 @@ import lombok.Setter;
 import model.Action;
 import model.SearchTree;
 import model.Tile;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Class that represents the decision-making of the character
+ */
 public class Decision {
 
     @Getter @Setter
@@ -21,6 +23,10 @@ public class Decision {
         evaluation = 0;
     }
 
+    /**
+     * Method that updates the evaluation of the character
+     * @param bonus the bonus to add to the evaluation
+     */
     public void updateEvaluation(int bonus) {
         evaluation += bonus;
     }
@@ -119,6 +125,10 @@ public class Decision {
         return actionsList;
     }
 
+    /**
+     * Method used to get the list of actions to do
+     * @return the list of actions
+     */
     public List<Action> makeRule() {
         TreeMap<Double, List<Tile>> boundaryTiles = sensor.getBoundaryTiles();
         List<Tile> tiles = boundaryTiles.firstEntry().getValue();
@@ -126,6 +136,9 @@ public class Decision {
         return bidirectionnalSearch(tiles.get(rand.nextInt(tiles.size())));
     }
 
+    /**
+     * Method used to update the evaluation of the character when we change the level
+     */
     public void nextLevel() {
         updateEvaluation(10 * sensor.getBoard().getHeight() * sensor.getBoard().getWidth());
     }

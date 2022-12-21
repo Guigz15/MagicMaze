@@ -5,10 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 import model.Board;
 import model.Tile;
-
 import java.util.*;
 import java.util.function.BiConsumer;
 
+/**
+ * Class that represents the sensor of the character
+ */
 public class Sensor {
 
     @Getter @Setter
@@ -48,6 +50,9 @@ public class Sensor {
         return tile.getYPosition();
     }
 
+    /**
+     * Method to initialize all variables when we change the level
+     */
     public void nextLevel() {
         discoveredTiles.clear();
         discoveredTiles.add(tile);
@@ -57,6 +62,9 @@ public class Sensor {
         initBoundaryTiles();
     }
 
+    /**
+     * Method called to update variables when the character moves
+     */
     public void update() {
         discoveredTiles.add(tile);
         tile.setStroke(Paint.valueOf("green"));
@@ -66,30 +74,35 @@ public class Sensor {
         initBoundaryTiles();
     }
 
+    /**
+     * Method to initialize the boundary tiles
+     */
     private void initBoundaryTiles() {
         board.getNeighbours(tile).forEach(neighbour -> {
             if (!discoveredTiles.contains(neighbour)) {
-                if (tile.isWindy()) {
-                    if (!boundaryTiles.containsKey(0.3))
-                        boundaryTiles.put(0.3, new ArrayList<>());
+                if (tile.isWindy() || tile.isBadSmelling()) {
+                    if (tile.isOnlyWindy()) {
+                        if (!boundaryTiles.containsKey(0.3))
+                            boundaryTiles.put(0.3, new ArrayList<>());
 
-                    // Add only if the neighbour is not already in the boundary tiles with a lower probability
-                    if (tileNotExistsWithSameProbability(neighbour, 0.3) && tileNotExistsWithProbabilityZero(neighbour)) {
-                        boundaryTiles.get(0.3).add(neighbour);
-                        neighbour.setStroke(Paint.valueOf("blue"));
-                        neighbour.setStrokeWidth(3);
-                        neighbour.setProbability(0.3);
-                    }
-                } else if (tile.isBadSmelling()) {
-                    if (!boundaryTiles.containsKey(0.2))
-                        boundaryTiles.put(0.2, new ArrayList<>());
+                        // Add only if the neighbour is not already in the boundary tiles with a lower probability
+                        if (tileNotExistsWithSameProbability(neighbour, 0.3) && tileNotExistsWithProbabilityZero(neighbour)) {
+                            boundaryTiles.get(0.3).add(neighbour);
+                            neighbour.setStroke(Paint.valueOf("blue"));
+                            neighbour.setStrokeWidth(3);
+                            neighbour.setProbability(0.3);
+                        }
+                    } else {
+                        if (!boundaryTiles.containsKey(0.2))
+                            boundaryTiles.put(0.2, new ArrayList<>());
 
-                    // Add only if the neighbour is not already in the boundary tiles with a lower probability
-                    if (tileNotExistsWithSameProbability(neighbour, 0.2) && tileNotExistsWithProbabilityZero(neighbour)) {
-                        boundaryTiles.get(0.2).add(neighbour);
-                        neighbour.setStroke(Paint.valueOf("blue"));
-                        neighbour.setStrokeWidth(3);
-                        neighbour.setProbability(0.2);
+                        // Add only if the neighbour is not already in the boundary tiles with a lower probability
+                        if (tileNotExistsWithSameProbability(neighbour, 0.2) && tileNotExistsWithProbabilityZero(neighbour)) {
+                            boundaryTiles.get(0.2).add(neighbour);
+                            neighbour.setStroke(Paint.valueOf("blue"));
+                            neighbour.setStrokeWidth(3);
+                            neighbour.setProbability(0.2);
+                        }
                     }
                 } else {
                     if (!boundaryTiles.containsKey(0.0))
@@ -113,7 +126,11 @@ public class Sensor {
         computeProbabilities(boundaryTiles);
     }
 
-    public void computeProbabilities(TreeMap<Double, List<Tile>> boundaryTiles) {
+    /**
+     * Method to compute the probabilities of the tiles in the boundary tiles
+     * @param boundaryTiles boundary tiles
+     */
+    private void computeProbabilities(TreeMap<Double, List<Tile>> boundaryTiles) {
         TreeMap<Double, List<Tile>> newBoundaryTiles = new TreeMap<>();
         newBoundaryTiles.putAll(boundaryTiles);
         newBoundaryTiles.forEach(new BiConsumer<Double, List<Tile>>() {
@@ -124,20 +141,22 @@ public class Sensor {
                     List<Tile> discoveredNeighbours = board.getDiscoveredNeighbours(tile, discoveredTiles);
                     if (discoveredNeighbours.size() == 1) {
                         Tile discoveredNeighbour = discoveredNeighbours.get(0);
-                        if (discoveredNeighbour.isWindy()) {
-                            if (!boundaryTiles.containsKey(0.3))
-                                boundaryTiles.put(0.3, new ArrayList<>());
-                            if (tileNotExistsWithSameProbability(tile, 0.3) && tileNotExistsWithProbabilityZero(tile)) {
-                                boundaryTiles.get(0.3).add(tile);
-                                tile.setProbability(0.3);
-                            }
-                            removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.3);
-                        } else if (discoveredNeighbour.isBadSmelling()) {
-                            if (!boundaryTiles.containsKey(0.2))
-                                boundaryTiles.put(0.2, new ArrayList<>());
-                            if (tileNotExistsWithSameProbability(tile, 0.2) && tileNotExistsWithProbabilityZero(tile)) {
-                                boundaryTiles.get(0.2).add(tile);
-                                tile.setProbability(0.2);
+                        if (discoveredNeighbour.isWindy() || discoveredNeighbour.isBadSmelling()) {
+                            if (discoveredNeighbour.isOnlyWindy()) {
+                                if (!boundaryTiles.containsKey(0.3))
+                                    boundaryTiles.put(0.3, new ArrayList<>());
+                                if (tileNotExistsWithSameProbability(tile, 0.3) && tileNotExistsWithProbabilityZero(tile)) {
+                                    boundaryTiles.get(0.3).add(tile);
+                                    tile.setProbability(0.3);
+                                }
+                                removeTileAlreadyExistingWithLowerProbabilityButNotZero(tile, 0.3);
+                            } else {
+                                if (!boundaryTiles.containsKey(0.2))
+                                    boundaryTiles.put(0.2, new ArrayList<>());
+                                if (tileNotExistsWithSameProbability(tile, 0.2) && tileNotExistsWithProbabilityZero(tile)) {
+                                    boundaryTiles.get(0.2).add(tile);
+                                    tile.setProbability(0.2);
+                                }
                             }
                         } else {
                             if (!boundaryTiles.containsKey(0.0))
@@ -330,6 +349,11 @@ public class Sensor {
         });
     }
 
+    /**
+     * This method removes the tile from the boundaryTiles list if there is already a tile with the same coordinates and a lower probability.
+     * @param tile The tile to be removed.
+     * @param probability The probability of the tile to be removed.
+     */
     private void removeTileAlreadyExistingWithLowerProbabilityButNotZero(Tile tile, double probability) {
         boundaryTiles.forEach((key, value) -> {
             if (key < probability && key != 0.0)
@@ -338,6 +362,11 @@ public class Sensor {
         boundaryTiles.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
+    /**
+     * This method checks if the tile not exists in the boundaryTiles list with a probability of zero.
+     * @param tile The tile to be checked.
+     * @return True if the tile not exists in the boundaryTiles list, false otherwise.
+     */
     private boolean tileNotExistsWithProbabilityZero(Tile tile) {
         if (boundaryTiles.containsKey(0.0)) {
             return !boundaryTiles.get(0.0).contains(tile);
@@ -346,10 +375,21 @@ public class Sensor {
         }
     }
 
+    /**
+     * This method checks if the tile already exists in the boundaryTiles list with higher probability.
+     * @param tile The tile to be checked.
+     * @return True if the tile already exists in the boundaryTiles list, false otherwise.
+     */
     private boolean tileAlreadyExistsWithHigherProbability(Tile tile) {
         return boundaryTiles.entrySet().stream().anyMatch(entry -> entry.getKey() > 0.0 && entry.getValue().contains(tile));
     }
 
+    /**
+     * This method checks if the tile not exists in the boundaryTiles list with the same probability.
+     * @param tile The tile to be checked.
+     * @param probability The probability of the tile to be checked.
+     * @return True if the tile not exists in the boundaryTiles list, false otherwise.
+     */
     private boolean tileNotExistsWithSameProbability(Tile tile, double probability) {
         return boundaryTiles.entrySet().stream().noneMatch(entry -> entry.getKey() == probability && entry.getValue().contains(tile));
     }
